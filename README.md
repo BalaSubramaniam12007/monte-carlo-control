@@ -33,12 +33,17 @@ def mc_control(env, gamma=1.0,
                n_episodes=3000, max_steps=200, first_visit=True):
 
     ns, na = env.observation_space.n, env.action_space.n
-    discounts = np.logspace(0, max_steps, num=max_steps, base=gamma, endpoint=False)
+    Q = np.zeros((ns, na), dtype=np.float64)
+    Q_track = np.zeros((n_episodes, ns, na), dtype=np.float64)
+
+
     alphas = decay_schedule(init_alpha, min_alpha, alpha_decay_ratio, n_episodes)
     epsilons = decay_schedule(init_epsilon, min_epsilon, epsilon_decay_ratio, n_episodes)
 
-    Q = np.zeros((ns, na), dtype=np.float64)
-    Q_track = np.zeros((n_episodes, ns, na), dtype=np.float64)
+
+    discounts = np.logspace(0, max_steps, num=max_steps, base=gamma, endpoint=False)
+
+
     pi_track = []
 
     select_action = lambda state, Q, epsilon: np.argmax(Q[state]) if np.random.random() > epsilon else np.random.randint(na)
